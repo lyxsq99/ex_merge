@@ -11,7 +11,16 @@ def get_todos():
 
 @app.route('/todos', methods=['POST'])
 def add_item():
-    item = request.json
+    if not request.json:
+        return jsonify({"error": "No data provided"}), 400
+    
+    item = request.json.get('item')
+    if not item or not isinstance(item, str):  # 假设 item 应为字符串
+        return jsonify({"error": "Item data is invalid or missing"}), 400
+    
+    if item in todos:
+        return jsonify({"error": "Item already exists"}), 400
+    
     todos.append(item)
     return jsonify(item), 201
 
